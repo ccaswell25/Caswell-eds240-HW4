@@ -1,0 +1,132 @@
+---
+title: "Homework Assignment #2"
+subtitle: "Part II"
+author: "Carly Caswell"
+date: 2024-02-03
+toc: true
+format: html
+editor_options: 
+  chunk_output_type: console
+---
+
+## Setup
+
+```{r}
+#| eval: true
+#| echo: true
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##                                load packages                             ----
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+library(tidyverse) # for data importing, tidying, and manipulation ----
+library(patchwork) # for simple combining of plots ----
+library(ggridges)
+
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##                                import data                               ----
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#reading in the data
+emissions_dat <- read_csv(here::here("assignments", "4", "Caswell-eds240-HW4", "data","data.csv"))
+
+#checking the structure of objects
+str(emissions_dat)
+
+```
+
+## Data wrangling
+
+```{r}
+#| eval: true
+#| echo: true
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##                          data cleaning & wrangling                       ----
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+emissions_clean <- emissions_dat %>% 
+  pivot_longer(cols = "1990":"2021") %>% #making data tidy 
+  janitor::clean_names() %>%   #making all columns lower snake case
+  rename(sector = u_s_emissions_by_economic_sector_mmt_co2_eq) %>% #renaming the columns to be more intuitive
+  rename(year = name, co2_total = value) %>% #renaming the columns to be more intuitive
+  mutate(co2_total = round(emissions_clean$co2_total, 2)) %>%  #updating emissions value to only have 2 decimal points
+  mutate(co2_total = as.numeric(co2_total), year = as.character(year)) %>% #updating column types
+  filter(sector != "Gross total")
+
+```
+
+## Data visualization
+
+Create at least three different plots as part of your exploratory data visualization.
+
+```{r}
+#| eval: true
+#| echo: true
+
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##                                  plot #1                                 ----
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Creating a scatterplot of all years of emissions data (1990 - 2021)
+emissions_clean %>% 
+  ggplot(aes(x = year, y = co2_total,color = sector, fill = sector)) +
+   geom_point(alpha = 0.5) 
+
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##                                  plot #2                                 ----
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Creating a stacked area plot of all years of emissions data (1990 - 2021)
+emissions_clean %>% 
+ggplot(aes(x = year, y = co2_total, group = sector, fill = sector)) +
+  geom_area(position = "fill") + #position = fill to get a better sense of the trends 
+  scale_y_continuous(labels = scales::label_percent(scale = 100)) #adding percentages on the y axis 
+
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##                                  plot #3                                 ----
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Creating a stacked area chart line version with faceted sectors for most recent 10 years
+emissions_clean %>% 
+  filter(year %in% c(2011:2021)) %>% 
+  ggplot(aes(x = year, y = co2_total, group = sector, fill = sector)) +
+  geom_line() +
+  facet_wrap(~sector)
+
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##                                  plot #4                                 ----
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Creating a bar plot comparing just 1990 to 2021 for each sector
+example <- e2 %>% 
+  filter(year %in% c("1991", "2021"))
+
+example %>% 
+  ggplot(aes(x = sector, y = co2_total, fill = year)) +
+  geom_col(position = position_dodge()) +
+  coord_flip()
+
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##                                  plot #5                                 ----
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Creating a bar plot comparing pre and post covid
+example <- e2 %>% 
+  filter(year %in% c("2019" : "2021"))
+
+example %>% 
+  ggplot(aes(x = sector, y = co2_total, fill = year)) +
+  geom_col(position = position_dodge()) +
+  coord_flip()
+```
+
+1. What have you learned about your data? Have any potentially interesting patterns emerged? (5-8 sentences)
+
+I have learned that my initial dataset is fairly simple. Since I only have one data point per year, I can compare over years and sectors, but there are not very many comparisons I can do outside of those two points. I do see general patterns with COVID-19 and in 2020 with emissions dropping and picking back up slightly in 2021, compared to previous years. I think it would also be interesting to compare this data regionally, and since this data is only US-focused, I can only compare between sectors. 
+
+2. In HW #1, you outlined some questions that you wanted to answer using these data. Have you made any strides towards answering those questions? If yes, how so? If no, what next steps do you need to take (e.g. I need to create X plot type, I still need to track down Y data, I need to restructure existing data so that you can visualize it in Z ways, etc.)? (8-12 sentences)
+
+ In my initial 
+ Questions I'm hoping to answer for my carbon emissions project might include...How have emissions changed over time by sector? How did the COVID-19 outbreak of 2020 have an impact on ghg emissions in each US sector?
+
+  For my carbon project, I would likely just use the emissions dataset, and potentially draw on a few data points for covid-19 peaks if I am graphing a time series. The covid-19 data I could gather from the World Health Organization's (WHO) website and would not need to merge it with my current dataset since it would likely be a separate graph element. 
+
+3. What challenges do you foresee encountering with your data? These can be data wrangling and / or visualization challenges. (4-6 sentences)
+
+I think the biggest challenge I foresee with this data is that it's fairly simple at its core since there are only three major variables. I will likely need to either: 1. find a different dataset that is more granular or 2.gather additional data. With finding a different dataset, I might need to find something more granular that has multiple variables (either globally or more specific than sector). To acquire additional data to join with this current dataset, I might look for a sector breakdown across other regions or countries or have another variable along with sector, like industry or for profit/non profit.
+
+Additionally, I could also explore my Strava data and answer the questions I initially documented for that dataset, however it will be much more timely to understand the data, wrangle it, and work with the mapping components. 
+
