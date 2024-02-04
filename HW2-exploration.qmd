@@ -48,7 +48,7 @@ emissions_clean <- emissions_dat %>%
   rename(sector = u_s_emissions_by_economic_sector_mmt_co2_eq) %>% #renaming the columns to be more intuitive
   rename(year = name, co2_total = value) %>% #renaming the columns to be more intuitive
   mutate(co2_total = as.numeric(round(co2_total, 2)), year = as.character(year)) %>% #updating column types
-  filter(sector != "Gross total")
+  filter(sector != "Gross total") #filtering out the gross total sector
 
 ```
 

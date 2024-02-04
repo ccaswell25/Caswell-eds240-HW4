@@ -255,7 +255,7 @@ dbl (32): 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, ...
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">sector =</span> u_s_emissions_by_economic_sector_mmt_co2_eq) <span class="sc">%&gt;%</span> <span class="co">#renaming the columns to be more intuitive</span></span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">year =</span> name, <span class="at">co2_total =</span> value) <span class="sc">%&gt;%</span> <span class="co">#renaming the columns to be more intuitive</span></span>
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">co2_total =</span> <span class="fu">as.numeric</span>(<span class="fu">round</span>(co2_total, <span class="dv">2</span>)), <span class="at">year =</span> <span class="fu">as.character</span>(year)) <span class="sc">%&gt;%</span> <span class="co">#updating column types</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(sector <span class="sc">!=</span> <span class="st">"Gross total"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(sector <span class="sc">!=</span> <span class="st">"Gross total"</span>) <span class="co">#filtering out the gross total sector</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="data-visualization" class="level2">
