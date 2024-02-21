@@ -4,9 +4,9 @@ subtitle: "Part II"
 author: "Carly Caswell"
 date: 2024-02-03
 toc: true
-format: html
-editor_options: 
-  chunk_output_type: console
+format: 
+  html:
+    embed-resources: true
 ---
 
 ## Setup

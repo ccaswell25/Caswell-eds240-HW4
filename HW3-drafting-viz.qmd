@@ -1,0 +1,237 @@
+---
+title: "Homework Assignment #3"
+subtitle: "Drafting HW4 Visualizations"
+author: "Carly Caswell"
+date: 2024-02-19
+# ~ additional YAML options omitted for brevity ~
+format:
+  html:
+    embed-resources: true
+---
+
+make sure code and outputs render make sure warnings and messages are suppressed
+
+**1. Which option do you plan to pursue?**
+
+I plan to pursue option 2 and build a cohesive infographic-style visualization. This will include three different, but complementary visualizations to tell a story with my Strava data.
+
+**2.Restate your questions(s). Has this changed at all since HW # 1? If yes, how so?**
+
+I originally had two datasets I was planning to explore. With my Strava data now working, I've chosen to pursue that dataset and change my question. My main over-arching question will be: How should I prepare for my next marathon? Utilizing my Strava data, I'll be able to plot my past marathon training habits/results by pulling activities related to my Strava account.
+
+My sub-questions for each part of the infographic include: How should I ramp up my training by each week and month leading up to the race? What other types of activities should I be including in cross-training? And, what are the average duration and time I should expect my runs to be over the training period?
+
+**3.Explain which variables from your dataset you will use to answer your question(s).**
+
+I have one dataset from the Strava API and I will use the {rStrava} package to access this data successfully in R. After using the API to receive my data, I have been able to read-in the following variables related to my Strava activities:
+id - unique identifier for the activity
+name - named title of the activity
+sport_type - type of activity 
+start_date - the start date and time of the activity (in ymdhms format)
+year - year of the start date of the activity
+month - month of the start date of the activity
+day - day of the start date of the activity
+week_number - the week number in the year
+total_miles - the total miles completed during the activity (if applicable)
+elevation_gain_ft - the total elevation gain during the activity in feet (if applicable)
+avg_speed_mi_hr - total average speed of activity in miles per hour (if applicable)
+
+Note: I have only listed the most relevant variables for my visualizations, as there are 49 potential variables to utilize in the dataset. With these variables, I can graph many different aspects of my Strava data.
+
+**Credits to Sam Csik for getting me going with this dataset, by providing clear code in GitHub, allowing me to wrangle the Strava data into a more accessible format.** 
+
+
+**4.  Find at least two data visualizations that you could (potentially) borrow / adapt pieces from. Link to them or download and embed them into your .qmd file, and explain which elements you might borrow (e.g. the graphic form, legend design, layout, etc.).**
+
+Data Visualization Example #1:
+
+![Heatmap of Kilometers Ran](calendar-heatmap.png){fig-alt="A heatmap of kilometers ran, faceted by years, and plotted as calendars with days of the week on the y axis. The colors indicate the variation in distance ran by week and day for the years 2012-2019."} The elements I plan to borrow from this graph are the faceting (though I might do by months) and the heatmap of calendar days. I like this display of the data because in a shorter timeframe (6 months of training) it'll be easier to see the data and aligns with what a typical training plan for running looks like.
+
+Data Visualization Example #2:
+
+![Violin Example of Kilometers Ran](violin-example.png){fig-alt="A heatmap of miles ran, faceted by years, plotted as calendars with days of the week on the y axis"}
+
+In this visualization, I might borrow the violin plot idea by month to show the distribution of miles that occurs over the months of training. This might be a nice way to show the distributions in a clearer way, especially since distance will increase as the months get closer to the marathon date.
+
+**5.Hand-draw your anticipated three visualization infographic (option 2). Take a photo of your drawing and embed it in your rendered .qmd file -- note that these are not exploratory visualizations, but rather your plan for your final visualizations that you will eventually polish and submit with HW #4.**
+
+```{r}
+![](file/path/to/image){fig-alt="Alt text goes here"}
+
+```
+
+**6.Mock up your visualizations using code. We understand that you will continue to iterate on these into HW #4 (particularly after receiving feedback), but by the end of HW #3, you should:
+ -use appropriate strategies to highlight / focus attention on a clear message -include appropriate text such as titles, captions, axis labels -experiment with colors and typefaces / fonts -create a presentable / aesthetically-pleasing theme (e.g. (re)move gridlines / legends as appropriate, adjust font sizes, etc.)**
+```{r}
+#Loading Libraries ---
+library(rStrava)
+library(tidyverse)
+library(dplyr)
+```
+ 
+```{r}
+#Reading in Data ---
+strava_activities <- read_csv("strava_activities.csv")
+```
+
+```{r}
+#Wrangling Data ---
+##creating a month name column 
+strava_activities$month_name <- month.name[strava_activities$month]
+
+##filtering to just timeframe of marathon training 
+filtered_strava_activities <- strava_activities %>% 
+  filter(year == 2023 & month > 4 & month < 11)  
+ 
+```
+
+Visualization # 1: Calendar Heatmap
+```{r}
+#Additional Wrangling---
+## making month_name a factor column
+filtered_strava_activities$month_name <- factor(filtered_strava_activities$month_name, 
+                                                levels = month.name)
+## adding a training_week column with new numbers 
+filtered_strava_activities$training_week <-ifelse(filtered_strava_activities$week_number == 18, 1,
+                        ifelse(filtered_strava_activities$week_number == 19, 2,
+                               ifelse(filtered_strava_activities$week_number == 20, 3,
+                                      ifelse(filtered_strava_activities$week_number == 21, 4,
+                                             ifelse(filtered_strava_activities$week_number == 22, 5,
+                                                    ifelse(filtered_strava_activities$week_number == 23, 6,
+                                                        ifelse(filtered_strava_activities$week_number == 24, 7,
+                                                                ifelse(filtered_strava_activities$week_number == 25, 8, ifelse(filtered_strava_activities$week_number == 26, 9,
+                                                                                ifelse(filtered_strava_activities$week_number == 27, 10,
+                                                                                        ifelse(filtered_strava_activities$week_number == 28, 11,
+                                                                                                ifelse(filtered_strava_activities$week_number == 29, 12,
+                                                                                                        ifelse(filtered_strava_activities$week_number == 30, 13,
+                                                                                                                ifelse(filtered_strava_activities$week_number == 31, 14,
+                                                                                                                        ifelse(filtered_strava_activities$week_number == 32, 15,
+                                                                                                                                ifelse(filtered_strava_activities$week_number == 33, 16,
+                                                                                                                                        ifelse(filtered_strava_activities$week_number == 34, 17,
+                                                                                                                                                ifelse(filtered_strava_activities$week_number == 35, 18,
+                                                                                                                                                        ifelse(filtered_strava_activities$week_number == 36, 19,
+                                                                                                                                                                ifelse(filtered_strava_activities$week_number == 37, 20,
+                                                                                                                                                                        ifelse(filtered_strava_activities$week_number == 38, 21,
+                                                                                                                                                                                ifelse(filtered_strava_activities$week_number == 39, 22,
+                                                                                                                                                                                        ifelse(filtered_strava_activities$week_number == 40, 23,
+ifelse(filtered_strava_activities$week_number == 41, 24,
+       ifelse(filtered_strava_activities$week_number == 42, 25,
+              ifelse(filtered_strava_activities$week_number == 43, 26,NA))))))))))))))))))))))))))
+```
+
+```{r}
+#Creating heatmap ---
+ggplot(filtered_strava_activities, aes(x = training_week, y = day)) +
+  geom_tile(aes(fill = total_miles)) + #specifying tile plot
+  scale_fill_continuous(low = "#FEFE62", high = "#D35FB7", name = "Total Daily Miles Ran", breaks = c(5,10,15,20,25,30, 35, 40)) + #adding color, legend title, and legend breaks
+  facet_wrap(~ month_name, scales = "free_x") + #wrapping data by month name
+  labs(x = "Training Week", y = "Day of the Month", title = "Visualizing a 24-Week Marathon Training Plan", subtitle = "Utilizing Strava data to understand peak mileage weeks for training purposes.") + #adding labels
+  scale_y_reverse() + #reversing the order of the y axis
+  theme( #adding theme with adjustments to font, size of text, and features of text
+    plot.title = element_text(family = "sans", face = "bold", size = 20),
+    plot.subtitle = element_text(family = "sans", face = "italic", size = 10),
+    axis.title = element_text(family = "sans", size = 10),
+    axis.text.x = element_text(family = "sans", size = 8),
+    axis.text.y = element_text(family = "sans", size =8),
+    legend.title = element_text(family = "sans", size = 10)
+    )
+```
+
+Visualization # 2: Hexplot
+```{r}
+#Additional Wrangling ---
+##filtering to just runs
+strava_runs <- filtered_strava_activities %>% 
+filter(sport_type == "Run" | sport_type == "TrailRun")
+```
+
+```{r}
+#Creating Hexplot ---
+strava_hex <- strava_runs %>% 
+ ggplot(aes(x = total_miles, y = (moving_time_sec)/ 3600)) + 
+ geom_hex() + #specifying hex plot
+ paletteer::scale_fill_paletteer_c("viridis::plasma", name = "Count of Runs", breaks = c(1,4,8,12,16,20)) + #adding color scale and legend breaks and title 
+ labs(y = "Elapsed Time (Hours)",
+ x = "Distance (Miles)", title = "Planning For Run Durations During Marathon Training", subtitle = "Utilizing Strava data to understand rough time allocation for lengths of runs.") + #labeling plot items
+ theme(panel.background = element_rect(fill = "white"), #specifying my theme
+ panel.border = element_rect(colour = "lightgrey", fill = NA, linetype = 1), #defining border layout
+ panel.grid.major.x = element_line(colour = "lightgrey", linetype = 2), #defining gridlines
+ panel.grid.major.y = element_line(colour = "lightgrey", linetype = 2), #defining gridlines
+  plot.title = element_text(family = "Optima", face = "bold", size = 17), #defining plot title layout
+    plot.subtitle = element_text(family = "Optima", face = "italic", size = 10), #defining plot subtitle layout
+    axis.title = element_text(family = "Optima", size = 9, face = "bold"), #axis text titles layout
+    axis.text.x = element_text(family = "Optima", size = 8), #x axis text values layout
+    axis.text.y = element_text(family = "Optima", size = 8), #y axis text values layout
+    legend.title = element_text(family = "Optima", size = 9, face = "bold") #legend text layout
+ )
+
+strava_hex + 
+annotate( #adding annotation for the marathon
+    geom = "text",
+    x = 25,
+    y = 4.3,
+    label = "Marathon Day",
+    size = 3,
+    color = "black",
+    hjust = "inward"
+  )  +
+  annotate( #adding an arrow pointing to the marathon point
+    geom = "curve",
+    x = 23, xend = 25,
+    y = 3.8, yend = 3.9,
+    curvature = 0.55,
+    arrow = arrow(length = unit(0.3, "cm"))
+  ) +
+  annotate( #adding annotation for the teton crest trail (outlier)
+    geom = "text",
+    x = 34.7,
+    y = 9,
+    label = "Teton Crest Trail",
+    size = 3,
+    color = "black",
+    hjust = "inward"
+  )  +
+  annotate( #adding an arrow pointing to the tct point
+    geom = "curve",
+    x = 35, xend = 36.3,
+    y = 9, yend = 9.9,
+    curvature = 0.35,
+    arrow = arrow(length = unit(0.3, "cm"))
+  )
+```
+
+
+```{r}
+#Plot # 3 -  Spider Plot
+subset_strava_activities <- 
+  strava_activities %>% 
+  filter(start_date_local > "2023-04-30") %>% 
+  filter(sport_type == "Run" | sport_type == "TrailRun" | sport_type == "WeightTraining" | sport_type == "Hike") %>% 
+  group_by(sport_type, month) %>% 
+  summarise(count(sport_type))
+
+
+ggplot(subset_strava_activities, aes(x = sport_type, y = Count)) +
+  geom_polygon(fill = "skyblue", color = "blue", size = 1) +
+  coord_polar(start = 0) +  # Make the chart circular
+  theme_minimal() +  # Apply a minimal theme
+  labs(title = "Strava Activities",
+       x = NULL, y = NULL,
+       caption = "Source: Strava Data") +
+  theme(axis.text.x = element_text(size = 12, face = "bold", angle = 45, hjust = 1),
+        axis.text.y = element_text(size = 12, face = "bold"),
+        plot.title = element_text(size = 14, face = "bold"))
+```
+
+
+**7.What challenges did you encounter or anticipate encountering as you continue to build / iterate on your visualizations in R?**
+
+The challenges I encountered with this homework revolved mostly around wrangling the data. This was quite time consuming, but once completed, allowed me to accelerate my visualizations with a dataset that was clean and tidy. I also struggled to pick which advanced plots to use, since a lot of powerful story-telling can come from simple plots with this data (like histograms and density plots). For my final assignment, I will have to figure out which plots will best represent my data in a clear manner and continue iterating on those I have created. 
+
+**8.What ggplot extension tools / packages do you need to use to build your visualizations? Are there any that we haven't covered in class that you'll be learning how to use for your visualizations?**
+
+I used the RStrava package to access my data, but not to build my visualization. I'm using standard ggplot tools for my visualizations.
+
+**9.What feedback do you need from the instructional team and / or your peers to ensure that your intended message is clear?**
+
+The feedback I'm hoping to receive from my peers/instructional team includes if my graphs clearly answer the questions I'm trying to answer, as well as any other plot ideas for answering this question. Since there are limited resources out there that have examples of advanced plots using Strava data, I'd love to brainstorm with other folks on other potential ideas for showcasing this data. 
