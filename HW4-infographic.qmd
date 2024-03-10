@@ -228,46 +228,6 @@ annotate( #adding annotation for the marathon
     arrow = arrow(length = unit(0.35, "cm"))
   )
 ```
-
-
-```{r}
-# annotations for outliers 
-strava_hex + 
-annotate( #adding annotation for the marathon
-    geom = "text",
-    x = 25,
-    y = 4.3,
-    label = "Lake Tahoe Marathon Day, 26.2 miles",
-    size = 3,
-    color = "black",
-    hjust = "inward"
-  )  +
-  annotate( #adding an arrow pointing to the marathon point
-    geom = "curve",
-    x = 23, xend = 25,
-    y = 3.8, yend = 3.9,
-    curvature = 0.55,
-    arrow = arrow(length = unit(0.3, "cm"))
-  ) +
-  annotate( #adding annotation for the teton crest trail (outlier)
-    geom = "text",
-    x = 35.9,
-    y = 9,
-    label = "The Teton Crest Trail was my longest race, clocking in at 38 miles.",
-    size = 3,
-    color = "black",
-    hjust = "inward"
-  )  +
-  annotate( #adding an arrow pointing to the tct point
-    geom = "curve",
-    x = 36, xend = 36.6,
-    y = 8.9, yend = 9.9,
-    curvature = 0.15,
-    arrow = arrow(length = unit(0.35, "cm"))
-  )
-```
-
-
 ```{r message = FALSE, warning = FALSE}
 #Additional wrangling ---
 ##summing total miles for each training week and sport type
@@ -276,7 +236,7 @@ total_by_training_week <- filtered_strava_activities |>
   group_by(sport_type, training_week) |> 
   summarize(total_miles_by_week = sum(total_miles)) 
 
-##calculating average weekly miles 
+##calculating average weekly miles ---
 avg_weekly_miles = round((sum(total_by_training_week$total_miles_by_week))/24, 2)
 
 ```
@@ -284,105 +244,34 @@ avg_weekly_miles = round((sum(total_by_training_week$total_miles_by_week))/24, 2
 
 Plot # 3: Barplot of Cross-Training
 
-```{r message = FALSE, warning = FALSE}
+```{r  message = FALSE, warning = FALSE}
 #Creating barplot ---
-weekly_distribution <- ggplot(total_by_training_week, aes(x = as.numeric(training_week), y = total_miles_by_week, fill = str_replace(sport_type, "TrailRun", "Trail Run"))) + #updating trail run to have a space
-  geom_col() + #defining a bar plot
-scale_fill_paletteer_d("nord::silver_mine") + #specifying the color scheme
-  labs(x = "Training Week", #adding labels to graph
-       y = "Total Distance (in miles)", fill = "Type of Activity", title = "Evaluating Total Weekly Training Peaks for Marathon Training", subtitle = "Utilizing Strava data to showcase mix of cardio activities and transition to primarily running within a 6 month training period.") +
-  scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) + #adding breaks to my x axis
-  scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + #adding breaks to my y axis
-geom_hline(yintercept = avg_weekly_miles, linetype = "dashed", color = "black") + # adding a horizontal line for average weekly miles 
-    annotate( #adding annotation for the teton crest trail (outlier)
-    geom = "text",
-    x = 0, 
-    y = 48,
-    label = "Average Weekly Miles (29.6)",
-    size = 3,
-    color = "black",
-    hjust = "inward"
-  )+
-  annotate( #adding an arrow pointing to the horizontal line
-    geom = "curve",
-    x = 2.5, xend = 2.5,
-    y = 45, yend = 30,
-    curvature = 0,
-    arrow = arrow(length = unit(0.3, "cm"))
-  ) +
-theme(panel.background = element_rect(fill = "white"), #specifying my theme
- panel.border = element_rect(colour = "lightgrey", fill = NA, linetype = 1), #defining border layout
-  plot.title = element_text(family = "Optima", face = "bold", size = 17), #defining plot title layout
-    plot.subtitle = element_text(family = "Optima", face = "italic", size = 9), #defining plot subtitle layout
-    axis.title = element_text(family = "Optima", size = 9, face = "bold"), #axis text titles layout
-    axis.text.x = element_text(family = "Optima", size = 8), #x axis text values layout
-    axis.text.y = element_text(family = "Optima", size = 8), #y axis text values layout
-    legend.title = element_text(family = "Optima", size = 9, face = "bold") #legend text layout
- )
-
-weekly_distribution
-
-```
-```{r}
-
-#Testing ---
-weekly_distribution2 <- ggplot(total_by_training_week, aes(x = fct_rev(as.factor(training_week)), y = total_miles_by_week, fill = str_replace(sport_type, "TrailRun", "Trail Run"))) + #updating trail run to have a space
+weekly_distribution2 <- ggplot(total_by_training_week, aes(x = fct_rev(as.factor(training_week)), y = total_miles_by_week, fill = str_replace(sport_type, "TrailRun", "Trail Run"))) + #updating trail run to have a space and making training week a factor in order to reverse it on the axes
   geom_col() + #defining a bar plot
 scale_fill_paletteer_d("calecopal::canary") + #specifying the color scheme
   labs(x = "Training Week", #adding labels to graph
-       y = "Total Distance (in miles)", fill = "Type of Activity", title = "Evaluating Total Weekly Training Peaks for Marathon Training", subtitle = "Utilizing Strava data to showcase mix of cardio activities and transition to primarily running within a 6 month training period.") +
-  coord_flip() +
+       y = "Total Distance (in miles)", fill = "Type of Activity", title = "Evaluating Total Weekly Training Peaks for Marathon Training", subtitle = "Utilizing Strava data to showcase a mix of cardio activities.") + 
+  coord_flip() + #flipping axes
   scale_y_discrete() + #adding breaks to my y axis
   theme(plot.background = element_rect(fill = "black"), #specifying my theme
- panel.background = element_blank(),
- panel.border = element_blank(),
-  panel.grid.major = element_blank(),
-  panel.grid.minor = element_blank(),
-  plot.title = element_text(family = "Optima", face = "bold", size = 17), #defining plot title layout
-    plot.subtitle = element_text(family = "Optima", face = "italic", size = 9), #defining plot subtitle layout
+ panel.background = element_blank(), #removing panel background
+ panel.border = element_blank(), #removing panel border
+  panel.grid.major = element_blank(), #removing panel grids
+  panel.grid.minor = element_blank(), #removing panel grids
+  plot.title = element_text(family = "Optima", face = "bold", size = 17, color = "white"), #defining plot title layout
+    plot.subtitle = element_text(family = "Optima", face = "italic", size = 9, color = "white"), #defining plot subtitle layout
     axis.title.y = element_text(family = "Optima", size = 9, face = "bold", color = "white"), #axis text titles layout
    axis.text.y = element_text(family = "Optima", size = 8, color = "white"), #y axis text values layout
- axis.text.x = element_blank(),
- axis.ticks.y = element_line(color = "white"),
- axis.line.y = element_line(color = "white"),
+ axis.text.x = element_blank(), #removing x axis text
+ axis.ticks.y = element_line(color = "white"), #making y axis ticks white
+ axis.line.y = element_line(color = "white"), #making y axis white
     legend.title = element_text(family = "Optima", size = 9, face = "bold", color = "white"), #legend text layout
-    legend.background = element_rect(fill = "black"),
- legend.text = element_text(color = "white"),
+    legend.background = element_rect(fill = "black"), #making legend background black
+ legend.text = element_text(color = "white"), #making legend text white
  legend.position = "top"
  )
 
 weekly_distribution2
-```
-
-
-
-Compiling my Plots Together
-
-```{r}
-# Defining my arrangement of plots and storing to referenceable object  ----
-final_plot <- weekly_distribution / training_calendar 
-final_plot
-  # defining the relative heights of rows of arranged plots----
-  plot_layout(heights = c(3, 0.5, 1)) + 
-  
-  ## adding a title, caption, and subtitle (with formatting) to final plot----
-  plot_annotation( 
-  caption = "Visualization: Christophe Nicault | Data: Our world in Data",
-  title = "Evolution of deaths from indoor air pollution",
-  subtitle = str_wrap("The percentage of death from indoor air pollution decreased in many countries in the last 30 years, due to a better access to clean fuel for cooking. However there are inequalities with many countries still lacking access, particularly in Africa, Oceania and Asia.", 100),
-  
-  # setting margins and font/size/color/margin/justification for title, subtitle, caption--
-  theme = theme( 
-    plot.margin = margin(10,10,5,10),
-    plot.title = element_text(family = "khula", size = 22, color = "#02403A", face = "bold", hjust = 0.5, margin = margin(5,0,10,0)),
-    plot.subtitle = element_text(family = "khula", size = 14, color = "black", hjust = 0.5, margin = margin(10,0,20,0)),
-    plot.caption = element_text(family = "techmono", size = 11, color = "#02403A", hjust = 0.95, margin = margin(20,0,5,0))   
-  )
-)
-
-#Saving the plot as a .png
-# specify file path/name and png resolution & size
-ragg::agg_png(here::here("assignments", "1", "eds240-hw1-ccaswell25", "outputs", paste0("indoor_pollution_", format(Sys.time(), "%Y%m%d_%H%M%S"), ".png")), res = 320, width = 12, height = 13, units = "in")
 
 ```
 
